@@ -38,8 +38,8 @@ const App = () => {
       });
 
       let networkName;
-      switch (chainId) {
-        case "0x190f1b45":
+      switch (chainId.toLowerCase()) {
+        case "0x190f1b46":
           networkName = "Passet Hub";
           break;
         default:
@@ -108,7 +108,7 @@ const App = () => {
       <p>
         Don't judge the code :) as it is for demonstration purposes only. You
         can check the source code &nbsp;
-        <a href="https://github.com/albertov19/moonbase-mintableERC20">here</a>
+        <a href="https://github.com/papermoonio/passetHub-mintableERC20">here</a>
       </p>
       <br />
     </Container>

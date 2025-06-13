@@ -101,7 +101,7 @@ const dataFeed = ({ account }) => {
 
     return tokenNames.map((token, index) => {
       let imgName = `/logos/${token["name"].toLowerCase()}.svg`;
-      let imgURL = `https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public${imgName}`;
+      let imgURL = `https://raw.githubusercontent.com/papermoonio/passetHub-mintableERC20/main/mintableERC20-interface/public${imgName}`;
 
       let tokenAddress = addresses[token["name"].toLowerCase()];
       let balance = tokBalState[token["name"].toLowerCase()]?.balance || "N/A";
@@ -154,15 +154,9 @@ const dataFeed = ({ account }) => {
       <h3>Token Balance Information</h3>
       <p>
         Information displayed in the following table corresponds to your
-        on-chain balance of each of the following ERC20 tokens on the Paset Hub
+        on-chain balance of each of the following ERC20 tokens on the PAsset Hub
         TestNet! <br />
         Users can mint 100 tokens every hour in each ERC20 token contract.{" "}
-        <br />
-        There are 8 tokens that represent each planet of the solar system. The
-        9th token is for Pluto, which is not{" "}
-        <a href="https://www.loc.gov/everyday-mysteries/astronomy/item/why-is-pluto-no-longer-a-planet/">
-          considered a planet anymore.
-        </a>
       </p>
       <Container>
         <Table textAlign="center">
@@ -178,33 +172,6 @@ const dataFeed = ({ account }) => {
             </Row>
           </Header>
           <Body>{renderRows()}</Body>
-
-          {/* <tbody>
-          <tr>
-            <td>
-              <img src='/logos/mercury.svg' alt='MercuryLogo' style={{ width: 32, height: 32 }} />
-            </td>
-            <td data-label='ERC20 Token'>Mercury</td>
-            <td data-label='Symbol'>MERC</td>
-            <td data-label='ERC20 Token'>{addresses.mercury}</td>
-            <td data-label='Balance'>{mercBalState}</td>
-            <td data-label='Mint'>{mercMintState}</td>
-            <td data-label='AddMetamask'>
-              <Form
-                onSubmit={() =>
-                  addToMetamask(
-                    addresses.mercury,
-                    'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/mercury.svg'
-                  )
-                }
-              >
-                <Button type='submit' loading={loading} disabled={loading} color='orange'>
-                  Add
-                </Button>
-              </Form>
-            </td>
-          </tr>
-        </tbody> */}
         </Table>
       </Container>
     </div>

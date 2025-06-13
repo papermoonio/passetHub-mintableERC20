@@ -1,7 +1,7 @@
 const ethers = require("ethers");
 
 const web3 = () => {
-  if (typeof ethereum !== "undefined" && ethereum.chainId === "0x190f1b45") {
+  if (typeof ethereum !== "undefined" && ethereum.chainId === "0x190f1b46") {
     // We are in the browser and MetaMask is running
     return new ethers.providers.Web3Provider(ethereum);
   } else {
@@ -9,7 +9,7 @@ const web3 = () => {
     return new ethers.providers.StaticJsonRpcProvider(
       "https://testnet-passet-hub-eth-rpc.polkadot.io",
       {
-        chainId: 420420421,
+        chainId: 420420422,
         name: "passet-hub",
       }
     );

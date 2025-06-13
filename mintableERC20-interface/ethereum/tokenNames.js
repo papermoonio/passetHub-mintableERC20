@@ -1,42 +1,14 @@
 export const tokenNames = [
   {
-    name: "One",
-    symbol: "ONE",
+    name: "Alpha",
+    symbol: "ALPHA",
   },
   {
-    name: "Two",
-    symbol: "TWO",
+    name: "Beta",
+    symbol: "BETA",
   },
   {
-    name: "Three",
-    symbol: "THREE",
-  },
-  {
-    name: "Four",
-    symbol: "FOUR",
-  },
-  {
-    name: "Five",
-    symbol: "FIVE",
-  },
-  {
-    name: "Six",
-    symbol: "SIX",
-  },
-  {
-    name: "Seven",
-    symbol: "SEVEN",
-  },
-  {
-    name: "Eight",
-    symbol: "EIGHT",
-  },
-  {
-    name: "Nine",
-    symbol: "NINE",
-  },
-  {
-    name: "Ten",
-    symbol: "TEN",
+    name: "Gamma",
+    symbol: "GAMMA",
   },
 ];

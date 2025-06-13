@@ -1,8 +1,9 @@
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract mintableERC20 is ERC20 {
+contract MintableERC20 is ERC20 {
     // Variables
     mapping(address => uint) public lastMintTime;
     uint private interval;
@@ -12,7 +13,8 @@ contract mintableERC20 is ERC20 {
         string memory _name,
         string memory _symbol
     ) ERC20(_name, _symbol) {
-        _mint(msg.sender, 10000000000000000000000);
+        _mint(msg.sender, 100000000000000000000000);
+
         owner = msg.sender;
         interval = 3600;
     }
@@ -27,10 +29,14 @@ contract mintableERC20 is ERC20 {
         lastMintTime[msg.sender] = block.timestamp;
     }
 
-    function canMint() public view returns (bool) {
+    function ownerMint(address _target, uint256 _amount) public onlyOwner {
+        _mint(_target, _amount);
+    }
+
+    function canMint(address _address) public view returns (bool) {
         return
-            lastMintTime[msg.sender] == 0 ||
-            block.timestamp > lastMintTime[msg.sender] + interval;
+            lastMintTime[_address] == 0 ||
+            block.timestamp > lastMintTime[_address] + interval;
     }
 
     function setInterval(uint _newInterval) public onlyOwner {
