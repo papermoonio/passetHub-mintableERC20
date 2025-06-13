@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract MintableERC20 is ERC20 {
     // Variables
     mapping(address => uint) public lastMintTime;
-    uint private interval;
+    uint256 public interval;
     address public owner;
 
     constructor(

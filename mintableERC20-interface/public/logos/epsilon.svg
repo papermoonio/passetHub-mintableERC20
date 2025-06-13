@@ -5,7 +5,7 @@
    viewBox="0 0 256 256"
    version="1.1"
    id="svg2"
-   sodipodi:docname="gamma.svg"
+   sodipodi:docname="epsilon.svg"
    inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -53,12 +53,12 @@
      text-anchor="middle"
      id="text1" />
   <text
-     x="128"
-     y="165.89996"
+     x="124.01801"
+     y="209.32442"
      font-family="Arial, Helvetica, sans-serif"
-     font-size="237.005px"
+     font-size="313.658px"
      fill="#ffffff"
      text-anchor="middle"
      id="text2"
-     style="stroke-width:9.87512">γ</text>
+     style="stroke-width:13.069">ε</text>
 </svg>

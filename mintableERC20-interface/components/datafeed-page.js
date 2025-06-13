@@ -5,142 +5,175 @@ import tokenInstance from "../ethereum/feed";
 
 const addresses = require("../ethereum/addresses");
 
-const dataFeed = ({ account }) => {
-  const [tokBalState, setTokBalState] = useState(Array());
-  const [loading, setLoading] = useState(false);
+const DataFeed = ({ account }) => {
+  // State for token data, keyed by token address for efficient lookup.
+  const [tokenData, setTokenData] = useState({});
+  // State for loading indicators, keyed by token address.
+  const [loadingStates, setLoadingStates] = useState({});
 
-  useEffect(() => {
-    const onUpdate = async () => {
-      let balances = Array();
-      for (let token of tokenNames) {
-        balances[token["name"].toLowerCase()] = await getBalance(
-          addresses[token["name"].toLowerCase()]
-        );
-      }
-
-      setTokBalState(balances);
-    };
-
-    const getBalance = async (address) => {
-      // Get token balance and mint state
-      try {
-        if (account.slice(0, 2) == "0x") {
-          const contractInstance = tokenInstance(address);
-          const dec = await contractInstance.decimals();
-          const mint = await contractInstance.canMint(account);
-          const balance = await contractInstance.balanceOf(account);
-          return {
-            balance: (balance.toString() / Math.pow(10, dec)).toFixed(2),
-            mint: mint,
-          };
-        } else {
-          return { balance: 0, mint: false };
-        }
-      } catch (error) {
-        // Could not fetch price return error
-        console.log(error);
-      }
-    };
-
-    let intervalId;
-    if (account) {
-      intervalId = setInterval(async () => await onUpdate(), 1500);
-    }
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [account]);
-
-  // On Submit Tx
-  const onMint = async (tokenName, address) => {
-    // Get Contract Instance for the Corresponding Token
-    const contractInstance = tokenInstance(address);
-
-    setLoading(loading[tokenName]);
-
-    // Mint Token
+  // Fetches balance and minting details for a single token.
+  // Now returns the address to be used as a key.
+  const getBalance = async (address) => {
     try {
-      let tx = await contractInstance.mintToken();
-      await tx.wait();
-    } catch (err) {
-      setLoading(false);
+      if (account?.slice(0, 2) === "0x") {
+        const contractInstance = tokenInstance(address);
+        const [dec, mint, interval, lastMint, balance] = await Promise.all([
+          contractInstance.decimals(),
+          contractInstance.canMint(account),
+          contractInstance.interval(),
+          contractInstance.lastMintTime(account),
+          contractInstance.balanceOf(account)
+        ]);
+
+        const timeLeft = BigInt(interval) - (BigInt(Math.floor(Date.now() / 1000)) - BigInt(lastMint));
+
+        return {
+          address,
+          balance: (Number(balance) / (10 ** Number(dec))).toFixed(2),
+          mint,
+          timeLeft: timeLeft > 0 ? timeLeft.toString() : "0",
+        };
+      }
+      // Return a default state if no account is connected
+      return { address, balance: "0.00", mint: false, timeLeft: "0" };
+    } catch (error) {
+      console.error(`Error fetching data for token ${address}:`, error);
+      return { address, balance: "Error", mint: false, timeLeft: "0" };
     }
-    setLoading(false);
-    return;
   };
 
+
+  useEffect(() => {
+    // Fetches data for all tokens in parallel.
+    const updateAllBalances = async () => {
+      if (!account) return;
+
+      try {
+        // Create an array of promises for all token data fetches
+        const promises = tokenNames.map(token => {
+          const address = addresses[token.name.toLowerCase()];
+          return getBalance(address);
+        });
+
+        // Await all promises to resolve
+        const results = await Promise.all(promises);
+
+        // Transform the array of results into an object keyed by address
+        const dataByAddress = results.reduce((acc, data) => {
+          if (data) {
+            acc[data.address] = data;
+          }
+          return acc;
+        }, {});
+
+        setTokenData(dataByAddress);
+      } catch (error) {
+        console.error("Failed to batch load token data:", error);
+      }
+    };
+
+    updateAllBalances(); // Initial fetch
+
+    const intervalId = setInterval(updateAllBalances, 10000); // Refresh every 10 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [account]);
+
+
+  // Toggles the loading state for a specific button.
+  const setButtonLoading = (address, key, isLoading) => {
+    setLoadingStates(prev => ({
+      ...prev,
+      [address]: { ...prev[address], [key]: isLoading }
+    }));
+  };
+
+  // Handles the token minting process for a specific token.
+  const onMint = async (tokenAddress) => {
+    setButtonLoading(tokenAddress, 'mint', true);
+    try {
+      const contractInstance = tokenInstance(tokenAddress);
+      const tx = await contractInstance.mintToken();
+      await tx.wait();
+      // Refresh data for the minted token for immediate feedback
+      const updatedData = await getBalance(tokenAddress);
+      setTokenData(prev => ({ ...prev, [tokenAddress]: updatedData }));
+    } catch (err) {
+      console.error("Minting failed:", err);
+    } finally {
+      setButtonLoading(tokenAddress, 'mint', false);
+    }
+  };
+
+  // Handles adding a token to Metamask.
   const addToMetamask = async (address, imageURL) => {
-    setLoading(true);
+    setButtonLoading(address, 'add', true);
     try {
       const contractInstance = tokenInstance(address);
-      const dec = await contractInstance.decimals();
-      const symbol = await contractInstance.symbol();
+      const [dec, symbol] = await Promise.all([
+        contractInstance.decimals(),
+        contractInstance.symbol()
+      ]);
 
-      await ethereum.request({
+      await window.ethereum.request({
         method: "wallet_watchAsset",
         params: {
-          type: "ERC20", // Initially only supports ERC20, but eventually more!
-          options: {
-            address: address, // The address that the token is at.
-            symbol: symbol, // A ticker symbol or shorthand, up to 5 chars.
-            decimals: dec, // The number of decimals in the token
-            image: imageURL, // A string url of the token logo
-          },
+          type: "ERC20",
+          options: { address, symbol, decimals: Number(dec), image: imageURL },
         },
       });
     } catch (error) {
-      console.log(error);
+      console.error("Failed to add token to Metamask:", error);
+    } finally {
+      setButtonLoading(address, 'add', false);
     }
-    setLoading(false);
   };
 
   const renderRows = () => {
     const { Row, Cell } = Table;
 
     return tokenNames.map((token, index) => {
-      let imgName = `/logos/${token["name"].toLowerCase()}.svg`;
-      let imgURL = `https://raw.githubusercontent.com/papermoonio/passetHub-mintableERC20/main/mintableERC20-interface/public${imgName}`;
+      const tokenNameLower = token.name.toLowerCase();
+      const tokenAddress = addresses[tokenNameLower];
+      const data = tokenData[tokenAddress];
+      const isLoading = loadingStates[tokenAddress] || {};
 
-      let tokenAddress = addresses[token["name"].toLowerCase()];
-      let balance = tokBalState[token["name"].toLowerCase()]?.balance || "N/A";
-      let mintEnabled = tokBalState[token["name"].toLowerCase()]?.mint || false;
-      let expURL = `https://moonbase.moonscan.io/token/${tokenAddress}`;
+      const imgName = `/logos/${tokenNameLower}.svg`;
+      const imgURL = `https://raw.githubusercontent.com/papermoonio/passetHub-mintableERC20/main/mintableERC20-interface/public${imgName}`;
+      const expURL = `https://blockscout-passet-hub.parity-testnet.parity.io/token/${tokenAddress}`;
+
+      const balance = data?.balance || "N/A";
+      const mintEnabled = data?.mint || false;
+      const remainingTime = data?.timeLeft || 0;
+
       return (
         <Row key={index}>
-          <Cell>{<img src={imgName} style={{ width: 32, height: 32 }} />}</Cell>
+          <Cell><img src={imgName} style={{ width: 32, height: 32 }} alt={`${token.name} logo`} /></Cell>
           <Cell>{token.name}</Cell>
           <Cell>{token.symbol}</Cell>
-          <Cell>{<a href={expURL}>{tokenAddress}</a>}</Cell>
+          <Cell><a href={expURL} target="_blank" rel="noopener noreferrer">{tokenAddress}</a></Cell>
           <Cell>{balance}</Cell>
           <Cell>
-            {
-              <Form onSubmit={() => onMint(token.name, tokenAddress)}>
-                <Button
-                  type="submit"
-                  loading={loading}
-                  disabled={loading || !mintEnabled}
-                  color="orange"
-                >
-                  Mint
-                </Button>
-              </Form>
-            }
+            <Form onSubmit={() => onMint(tokenAddress)}>
+              <Button
+                type="submit"
+                loading={isLoading.mint}
+                disabled={isLoading.mint || !mintEnabled}
+                color="orange"
+                content={mintEnabled ? "Mint" : `${remainingTime}s`}
+              />
+            </Form>
           </Cell>
           <Cell>
-            {
-              <Form onSubmit={() => addToMetamask(tokenAddress, imgURL)}>
-                <Button
-                  type="submit"
-                  loading={loading}
-                  disabled={loading}
-                  color="orange"
-                >
-                  Add
-                </Button>
-              </Form>
-            }
+            <Form onSubmit={() => addToMetamask(tokenAddress, imgURL)}>
+              <Button
+                type="submit"
+                loading={isLoading.add}
+                disabled={isLoading.add}
+                color="orange"
+                content="Add"
+              />
+            </Form>
           </Cell>
         </Row>
       );
@@ -153,10 +186,8 @@ const dataFeed = ({ account }) => {
     <div>
       <h3>Token Balance Information</h3>
       <p>
-        Information displayed in the following table corresponds to your
-        on-chain balance of each of the following ERC20 tokens on the PAsset Hub
-        TestNet! <br />
-        Users can mint 100 tokens every hour in each ERC20 token contract.{" "}
+        Information displayed in the following table corresponds to your on-chain balance of each of the following ERC20 tokens on the PAsset Hub TestNet! <br />
+        Users can mint 100 tokens every hour in each ERC20 token contract.
       </p>
       <Container>
         <Table textAlign="center">
@@ -178,4 +209,4 @@ const dataFeed = ({ account }) => {
   );
 };
 
-export default dataFeed;
+export default DataFeed;
