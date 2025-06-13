@@ -40,11 +40,11 @@ const App = () => {
       let networkName;
       switch (chainId.toLowerCase()) {
         case "0x190f1b46":
-          networkName = "Passet Hub";
+          networkName = "PAsset Hub";
           break;
         default:
           networkName = "Not Connected";
-          setAccount("Only Passet Hub Supported");
+          setAccount("Only PAsset Hub Supported");
           break;
       }
 
@@ -70,7 +70,7 @@ const App = () => {
   return (
     <Container>
       <Head>
-        <title>Passet Hub ERC20Mint</title>
+        <title>Polkadot Hub TestNet ERC20Mint</title>
         <link rel="icon" type="image/png" sizes="32x32" href="./favicon.svg" />
         <link
           rel="stylesheet"
@@ -79,7 +79,7 @@ const App = () => {
       </Head>
       <Menu style={{ marginTop: "10px" }}>
         <Link route="/">
-          <a className="item">Passet Hub ERC20 Faucet</a>
+          <a className="item">Polkadot Hub TestNet ERC20 Faucet</a>
         </Link>
         <Menu.Menu position="right">
           <a className="item"> {account} </a>
@@ -108,7 +108,7 @@ const App = () => {
       <p>
         Don't judge the code :) as it is for demonstration purposes only. You
         can check the source code &nbsp;
-        <a href="https://github.com/papermoonio/passetHub-mintableERC20">here</a>
+        <a href="https://github.com/papermoonio/polkadot-mintableERC20">here</a>
       </p>
       <br />
     </Container>

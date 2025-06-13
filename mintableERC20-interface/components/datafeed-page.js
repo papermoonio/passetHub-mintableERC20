@@ -186,7 +186,7 @@ const DataFeed = ({ account }) => {
     <div>
       <h3>Token Balance Information</h3>
       <p>
-        Information displayed in the following table corresponds to your on-chain balance of each of the following ERC20 tokens on the PAsset Hub TestNet! <br />
+        Information displayed in the following table corresponds to your on-chain balance of each of the following ERC20 tokens on the Polkadot Hub TestNet! <br />
         Users can mint 100 tokens every hour in each ERC20 token contract.
       </p>
       <Container>

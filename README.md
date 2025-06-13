@@ -1,12 +1,12 @@
-# Dashboard to Mint Different ERC20 Tokens in Passet Hub
+# Dashboard to Mint Different ERC20 Tokens in Polkadot Hub Networks
 
 ## Getting started
 
 Clone the repo:
 
 ```
-git clone https://github.com/papermoonio/passetHub-mintableERC20
-cd moonbase-mintableERC20/mintableERC20-interface
+git clone https://github.com/papermoonio/polkadot-mintableERC20
+cd polkadot-mintableERC20/mintableERC20-interface
 ```
 
 ### application server
