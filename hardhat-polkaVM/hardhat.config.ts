@@ -5,7 +5,7 @@ import { config as dotConfig } from "dotenv";
 dotConfig();
 
 if (!process.env.PRIVATE_KEY) {
-  throw new Error("Please set your PRIVATE_KEY in a .env file");
+    throw new Error("Please set your PRIVATE_KEY in a .env file");
 }
 
 const config: HardhatUserConfig = {
@@ -24,11 +24,16 @@ const config: HardhatUserConfig = {
                 dev: true,
             },
         },
-            passetHub: {
-      polkavm: true,
-      url: "https://testnet-passet-hub-eth-rpc.polkadot.io",
-      accounts: [process.env.PRIVATE_KEY],
-    },
+        passetHub: {
+            polkavm: true,
+            url: "https://testnet-passet-hub-eth-rpc.polkadot.io",
+            accounts: [process.env.PRIVATE_KEY],
+        },
+        local: {
+            polkavm: true,
+            url: "http://localhost:8545",
+            accounts: [process.env.LOCAL_PRIV_KEY ?? "", process.env.LOCAL_PRIV_KEY_2 ?? ""],
+        },
     }
 };
 

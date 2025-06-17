@@ -4,12 +4,12 @@ import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import { ContractOptions, Future } from "@nomicfoundation/ignition-core";
 
 const tokens = [
-  //{ name: "Alpha Token", symbol: "ALPHA" },
-  //{ name: "Beta Token", symbol: "BETA" },
-  //{ name: "Gamma Token", symbol: "GAMMA" },
-  //{ name: "Delta Token", symbol: "DELTA" },
-  //{ name: "Epsilon Token", symbol: "EPS" },
-  { name: "Zeta Token", symbol: "ZETA" },
+  { name: "Alpha Token", symbol: "ALPHA" },
+  // { name: "Beta Token", symbol: "BETA" },
+  // { name: "Gamma Token", symbol: "GAMMA" },
+  // { name: "Delta Token", symbol: "DELTA" },
+  // { name: "Epsilon Token", symbol: "EPS" },
+  // { name: "Zeta Token", symbol: "ZETA" },
 ];
 
 const MintableERC20MultiModule = buildModule(
