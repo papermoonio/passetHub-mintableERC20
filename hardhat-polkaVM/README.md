@@ -11,3 +11,15 @@ npx hardhat test
 npx hardhat node
 npx hardhat node && npx hardhat ignition deploy ./ignition/modules/MintableERC20.ts --network local
 ```
+
+3. Test contract in local
+
+```shell
+npx hardhat test --network local
+```
+
+4. Deploy contract to Passet Hub
+
+```shell
+npx hardhat ignition deploy ./ignition/modules/MintableERC20.ts --network passetHub
+```
