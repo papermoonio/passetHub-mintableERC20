@@ -21,5 +21,5 @@ npx hardhat test --network local
 4. Deploy contract to Passet Hub
 
 ```shell
-npx hardhat ignition deploy ./ignition/modules/MintableERC20.ts --network passetHub
+npx hardhat ignition deploy ./ignition/modules/MintableERC20.ts --network passetHub --parameters parameters.json
 ```
